@@ -1,7 +1,11 @@
 use strict;
 use warnings;
 use utf8;
+use File::Spec;
+use File::Basename;
+use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Encode;
+use Encode::UTF8Mac;
 use Getopt::Long;
 use LWP::UserAgent;
 
@@ -12,10 +16,8 @@ GetOptions (
     'content=s' => \$content,
 );
 
-my $encode = find_encoding('utf-8');
-
 $url =~ s{/+$}{};
-$content = $encode->decode($content);
+$content = decode('utf-8-mac', $content);
 
 my $ua = LWP::UserAgent->new(
     agent   => 'GTDme Alfred Inbox Extension/0.01',
@@ -34,7 +36,7 @@ my $msg;
 
 ### 200
 if ( $res->code eq '200' ) {
-    $msg = '[OK] ' . $encode->encode($content);
+    $msg = '[OK] ' . encode_utf8($content);
 }
 ### non-200
 else {
